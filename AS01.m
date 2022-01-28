@@ -309,7 +309,7 @@ else
 end
 disp("Check if C and C_alt calculate to the same: " + C_check)
 
-xVector = [-10, 10];
+xVector = [-10:10];
 yVector = C(1) + C(2) * xVector + C(3) * xVector.^2;
 plot(xVector, yVector)
 hold on
