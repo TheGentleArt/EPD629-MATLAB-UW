@@ -78,9 +78,13 @@
 % % 
 % % 7)	Complete chapter 1 textbook problem 14a, 14b, and 14c. (3 points)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % Q1:
 close all;
 clear; clc;
+format compact;
 fprintf("\nQ1\n")
 
 % Ambient Conditions
@@ -111,11 +115,7 @@ RollingDragCoef = 0.005; % Vehicle rolling resistance coefficient
 % F_incline = m*g_*sin(theta) % Force to overcome component of gravity on hill
 
 
-
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %Q2 (6):
@@ -158,18 +158,26 @@ RollingDragCoef = 0.005; % Vehicle rolling resistance coefficient
 % Then the particular solution:
 % i = (V/R) + (-V/R)*exp(-(R/L)*t)
 
-% Plot a solution
+% Inputs
 R = 110; % Ohms
 V = 14.5; % Volts
 Ratio_RL = 1; % R/L
+
 L = R/Ratio_RL; % Henries (Inductance)
-t = linspace(0,20,1000) % Time vector
-i = (V/R) + (-V/R)*exp(-(R/L).*t)
+t = linspace(0,20,1000); % Time vector
+i = (V/R) + (-V/R)*exp(-(R/L).*t);
+
+% Plot a solution
 figure
 plot(t, i) % Plot current vs time
+plot_title = ['Current vs Time, where R=', num2str(R), ', V=', num2str(V),', & R/L=',num2str(Ratio_RL)];
+title(plot_title)
+xlabel('Seconds')
+ylabel('Amps')
+grid on
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %Q3 (7)
@@ -178,7 +186,20 @@ plot(t, i) % Plot current vs time
 % % Repeat Problem 13 using the network shown in
 % % Figure P1.6. Assume R=1Ω, L=0.5H, and 1/LC=16.
 
+clear L;
+clear i;
+clear R;
+clear V;
+clear t;
+
+%Inputs
+R = 1;
+L = 0.5;
+Ratio_OneOverLC = 16;
+
+
 % Attempt:
+C = (1/L)*(1/Ratio_OneOverLC)
 % If V_source - V_resistor - V_inductor - V_capacitor = 0
 % q is charge ; i = dq/dt
 % V_source = V_resistor + V_inductor + V_capacitor
@@ -191,36 +212,48 @@ plot(t, i) % Plot current vs time
 % 0 = (di/dt) + i*(R/L) + (1/(L*C))*int[i dtau,0,t]
 % Differentiate with resepect to t,
 % 0 = (d^2i/dt^2) + (R/L)*(di/dt) + (1/(L*C))*i
-% The 'auxillary equation' is then: m^2 + (R/L)*m - (!/(L*C))=0
+% The 'auxillary equation' is then: 1*m^2 + (R/L)*m - (1/(L*C))=0
 % aux_coefficients = [1, R/L, 1/(L*C)]
 aux_coefficients = [1, R/L, 16];
-roots(aux_coefficients);
+aux_roots = roots(aux_coefficients);
 % This is 'Scenario 3', where roots are complex
-% General solution for Scenario 3 is:
+% A general solution for Scenario 3 is:
 % y = e^(alpha*x)*(A*cos(beta*x)+B*sin(beta*x))
+% Here, alpha = real(aux_roots(1)), and beta = imag(aux_roots(1))
+% Only the first root is considered here because the second is its conjugate and
+% would make no difference.
+alpha = real(aux_roots(1));
+beta = imag(aux_roots(1));
+% The general solution for this problem is then given by:
+% i(t) = exp(alpha.*t)*(A*cos(beta.*t)+B*sin(beta.*t))
+% setting the initial values of:
+% i(0) = [0]; % Current is initially zero amps
+% t(0) = [0]; % Time is initially zero seconds
+% i(t) = exp(alpha.*t)*(A*cos(beta.*t)+B*sin(beta.*t))
+% 0 = exp(alpha.*0)*(A*cos(beta.*0)+B*sin(beta.*0))
+% 0 = A
+A = 0;
+% We still need the B value, so a second initial condition is needed.
+% was told charge initially zero.
+% Differentiating i(t):
+% di/dt = exp(alpha*t)*(sin(beta*t)*(alpha*B-A*beta)+cos(beta*t)*(alpha*A+beta*B))
+% Need to know what di/dt(0) is equal to...
+% Asked a student who told me it is (1/L)... not sure why though...
+% Assumming this is correct, d/dt(i) = 2
+% 2 = exp(alpha*0)*(sin(beta*0)*(alpha*B-0*beta)+cos(beta*0)*(alpha*0+beta*B))
+% 2 = beta*B
+B = (1/L)/beta;
+% Then the solution can be written as:
+t = linspace(0,10,1000); % time vector
+i = exp(alpha.*t).*(A.*cos(beta.*t)+B.*sin(beta.*t)); % currrent vector
 
-
-
-
-% Previous work discarded below:
-% V(t) = i*R + L(di//dt) + q/C
-%%
-% V(t) = L(di//dt) + i*R + q/C
-% dV(t)/dt = L(d^2i/dt^2) + R*(di/dt) + (1/C)*dq/dt
-% dV(t)/dt = L(d^2i/dt^2) + R*(di/dt) + (1/C)*i
-% (1/L)*(dV(t)/dt) = d^2i/dt^2 + (R/L)*(di/dt) + (1/(L*C))*i
-% Must find natural response and forced response to get total response
-% For natural response, say V(t) = 0
-% Initial conditions i(o) = 0; di/dt(0) = 0
-% Assume i(t) = A*e^(s*t)     IE i(t) = A*exp(s*t)
-%%
-% Characteristic equation
-% s^2 + (R/L)*s + 1/(L*C) = 0
-% Roots are:
-% s = (-1/2)*(R/L) +/- ((R/(2*L))^2-1/(L*C))^(1/2)
-% Recall i(t) = A*exp(s*t)
-% 
-% Since i = dq/dt, then
-% V(t) = (dq/dt)*R + L*(d^2q/dt^2) + q/C
-% V(t) = L*(d^2q/dt^2) + (dq/dt)*R + q/C
-% V(t)/L = (d^2q/dt^2) + (R/L)*(dq/dt) + (1/(C*L))*q
+%Plot
+figure
+plot(t, i) % Plot current vs time
+plot_title = ['Current vs Time, where R=', num2str(R), ', L=', num2str(L),', & 1/(L*C)=', num2str(Ratio_OneOverLC)];
+title(plot_title)
+xlabel('Seconds')
+ylabel('Amps')
+grid on
+txt = {'Assumed di/dt(0) = 1/L after talking to another student','about not understanding the second initial condition, still','did not understand why this is the case though.'}
+text(1, .2, txt)
