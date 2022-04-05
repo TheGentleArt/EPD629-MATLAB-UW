@@ -8,14 +8,10 @@
 % Assignment:
 % This homework assignment is to create bode plots for an electronic
 % throttle system and determine gains for a PI and a PID controller.
-%  
-% Part 1: Model Initialization File --- PI Control with Zero at -5rad/s (5 points)
-%
 % The remainder of the assignment is done via simulink.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Note that this was assignment had a large copy-paste from the homework
 % assignment instructions...
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Close figures, clear variables and command window
