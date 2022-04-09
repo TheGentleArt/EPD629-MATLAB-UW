@@ -8,7 +8,6 @@
 % Assignment:
 % This homework assignment is to create bode plots for an electronic
 % throttle system and determine gains for a PI and a PID controller.
-% The remainder of the assignment is done via simulink.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Note that this was assignment had a large copy-paste from the homework
 % assignment instructions...
@@ -69,7 +68,7 @@ Gain = 1.14  % Gain from breakaway point in root locus
 Gc = Gain*Gc_r2 % Controller transfer function
 sisotool(Gp, Gc) % Opens the Control System Designer tool
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('Part 3: PI Control with Zero at -8.3691 rad/s')
 % Note that -8.3691 should be p3
 figure(3)
@@ -80,7 +79,7 @@ Gain = 34.4  % Gain from breakaway point in root locus
 Gc = Gain*Gc_r3 % Controller transfer function
 sisotool(Gp, Gc) % Opens the Control System Designer tool
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('Part 4: PID Control with Zeros at -256.9902 & -8.3691 rad/s')
 % Note that -8.3691 should be p3, -256.9902 should be p2
 figure(4)
@@ -91,7 +90,26 @@ Gain = 119  % Gain from breakaway point in root locus
 Gc = Gain*Gc_r4 % Controller transfer function
 sisotool(Gp, Gc) % Opens the Control System Designer tool
 
-%%%%% Need to do part 5 still
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+disp('Part 5: PI Control with Zero at -8.3691 rad/s and complex poles')
+% Note that -8.3691 should be p3, -256.9902 should be p2
+L = 0.001;  % H
+G1 = Kt/(L*s+R)
+G2 = 1/(J*s)
+G2 = feedback(G2,b)
+G2 = G2/s
+G2 = feedback(G2,K)
+Gp = feedback(G1*G2,Kb*s)
+p = pole(Gp)
+Gc_r5 = (s/(-p3)+1)/s % Gc for root locus with overall gain equal to one
+Gain = 20
+Gc = Gain*Gc_r5
+sisotool(Gp, Gc)
+Gain = 46.035 % got from edit compensator tool in sisotool after adjusting to GM: 13 dB
+Gc = Gain*Gc_r5
+figure(5)
+bode(Gc*Gp)
+T = feedback(Gc*Gp, 1)
+figure(6)
+step(T)
 
-
-% Continue in Simulink...
